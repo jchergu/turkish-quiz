@@ -64,3 +64,27 @@ h1 {
 #site-footer a:hover {
   text-decoration: none;
 }
+
+/* mistakes list on end screen */
+#mistakes {
+  text-align: left;
+  max-width: 820px;
+  margin: 12px auto;
+  font-size: 0.95rem;
+  color: #333;
+}
+.mistake-item {
+  background: #fff;
+  border: 1px solid #eee;
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin: 8px 0;
+}
+.mistake-item .user {
+  color: #c0392b;
+  font-weight: 600;
+}
+.mistake-item .correct {
+  color: #2a9d8f;
+  font-weight: 600;
+}

@@ -4,6 +4,7 @@ let current = 0;
 let score = 0;
 let timer;
 let timeLeft = 30;
+let mistakes = []; // track wrong answers
 
 async function loadWords() {
   try {
@@ -49,6 +50,7 @@ function startQuiz() {
     return;
   }
 
+  mistakes = []; // reset mistakes at start
   let total = parseInt(document.getElementById("wordCount").value) || 20;
   // compute max verbs allowed (20%)
   let maxVerbs = Math.floor(total * 0.2);
@@ -118,14 +120,21 @@ function startTimer() {
 
 function checkAnswer() {
   clearInterval(timer);
-  const input = document.getElementById("answer").value.trim().toLowerCase();
-  const correct = quizWords[current].tr.map(t => t.toLowerCase());
+  const inputRaw = document.getElementById("answer").value;
+  const input = inputRaw.trim().toLowerCase();
+  const q = quizWords[current];
+  const correct = q.tr.map(t => t.toLowerCase());
 
   if (correct.includes(input)) {
     document.getElementById("result").innerText = "✅ Correct!";
     score++;
   } else {
-    document.getElementById("result").innerText = "❌ Correct: " + correct.join(", ");
+    document.getElementById("result").innerText = "❌ Correct: " + q.tr.join(", ");
+    mistakes.push({
+      en: q.en,
+      user: inputRaw === "" ? "(no answer)" : inputRaw,
+      correct: q.tr.slice() // keep original array
+    });
   }
 
   current++;
@@ -136,12 +145,34 @@ function endQuiz() {
   document.getElementById("quiz-screen").style.display = "none";
   document.getElementById("end-screen").style.display = "block";
   document.getElementById("score").innerText = `Your score: ${score}/${quizWords.length}`;
+
+  // render mistakes
+  const out = document.getElementById("mistakes");
+  if (!mistakes || mistakes.length === 0) {
+    out.innerHTML = "<p>No mistakes — nice job!</p>";
+  } else {
+    const html = mistakes.map(m => {
+      const correct = m.correct.join(", ");
+      return `<div class="mistake-item">
+                <div><strong>${escapeHtml(m.en)}</strong></div>
+                <div>User: <span class="user">${escapeHtml(m.user)}</span></div>
+                <div>Correct: <span class="correct">${escapeHtml(correct)}</span></div>
+              </div>`;
+    }).join("");
+    out.innerHTML = `<h3>Errors (${mistakes.length})</h3>${html}`;
+  }
+}
+
+// small helper to avoid accidental HTML injection from data
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
 }
 
 function restartQuiz() {
   document.getElementById("start-screen").style.display = "block";
   document.getElementById("quiz-screen").style.display = "none";
   document.getElementById("end-screen").style.display = "none";
+  document.getElementById("mistakes").innerHTML = "";
 }
 
 function insertChar(char) {
