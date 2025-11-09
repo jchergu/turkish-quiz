@@ -19,7 +19,20 @@
   <div id="quiz-screen" style="display:none;">
     <p>Translate to Turkish:</p>
     <h2 id="english">Loading...</h2>
-    <input id="answer" type="text" placeholder="Type in Turkish" onkeydown="if(event.key==='Enter') checkAnswer()" />
+
+    <input id="answer" type="text" placeholder="Type in Turkish" 
+      onkeydown="if(event.key==='Enter') checkAnswer()" />
+
+    <!-- Turkish char buttons -->
+    <div id="char-buttons">
+      <button type="button" onclick="insertChar('ç')">ç</button>
+      <button type="button" onclick="insertChar('ğ')">ğ</button>
+      <button type="button" onclick="insertChar('ı')">ı</button>
+      <button type="button" onclick="insertChar('ö')">ö</button>
+      <button type="button" onclick="insertChar('ş')">ş</button>
+      <button type="button" onclick="insertChar('ü')">ü</button>
+    </div>
+
     <p id="result"></p>
     <p>⏳ <span id="timer">30</span>s</p>
   </div>

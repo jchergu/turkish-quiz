@@ -88,4 +88,21 @@ function restartQuiz() {
   document.getElementById("end-screen").style.display = "none";
 }
 
+function insertChar(char) {
+  const input = document.getElementById("answer");
+  const start = input.selectionStart;
+  const end = input.selectionEnd;
+  const text = input.value;
+
+  // Insert the chosen char at the cursor position
+  input.value = text.slice(0, start) + char + text.slice(end);
+
+  // Move the cursor after the inserted char
+  input.selectionStart = input.selectionEnd = start + char.length;
+
+  // Focus back on input
+  input.focus();
+}
+
+
 document.addEventListener("DOMContentLoaded", loadWords);
