@@ -1,24 +1,48 @@
 let words = [];
+let quizWords = [];
 let current = 0;
 let score = 0;
 let timer;
 let timeLeft = 30;
 
 async function loadWords() {
-  const res = await fetch("words.json");
-  words = await res.json();
-  startQuiz();
+  try {
+    const res = await fetch("./words.json");
+    words = await res.json();
+
+    // Enable button after loading
+    const btn = document.getElementById("startButton");
+    btn.textContent = "Start Quiz";
+    btn.disabled = false;
+    btn.onclick = startQuiz;
+  } catch (e) {
+    console.error("Error loading words:", e);
+    document.getElementById("startButton").textContent = "Error loading file!";
+  }
 }
 
 function startQuiz() {
-  const total = parseInt(prompt("How many words? (default 20)")) || 20;
-  words = words.sort(() => 0.5 - Math.random()).slice(0, total);
+  if (words.length === 0) {
+    alert("Words not loaded yet!");
+    return;
+  }
+
+  const total = parseInt(document.getElementById("wordCount").value) || 20;
+  quizWords = [...words].sort(() => 0.5 - Math.random()).slice(0, total);
+  current = 0;
+  score = 0;
+
+  document.getElementById("start-screen").style.display = "none";
+  document.getElementById("quiz-screen").style.display = "block";
+  document.getElementById("end-screen").style.display = "none";
+
   nextQuestion();
 }
 
 function nextQuestion() {
-  if (current >= words.length) return endQuiz();
-  const q = words[current];
+  if (current >= quizWords.length) return endQuiz();
+
+  const q = quizWords[current];
   document.getElementById("english").innerText = q.en;
   document.getElementById("answer").value = "";
   document.getElementById("result").innerText = "";
@@ -39,19 +63,29 @@ function startTimer() {
 function checkAnswer() {
   clearInterval(timer);
   const input = document.getElementById("answer").value.trim().toLowerCase();
-  const correct = words[current].tr.map(t => t.toLowerCase());
+  const correct = quizWords[current].tr.map(t => t.toLowerCase());
+
   if (correct.includes(input)) {
     document.getElementById("result").innerText = "✅ Correct!";
     score++;
   } else {
     document.getElementById("result").innerText = "❌ Correct: " + correct.join(", ");
   }
+
   current++;
   setTimeout(nextQuestion, 1500);
 }
 
 function endQuiz() {
-  document.body.innerHTML = `<h2>Quiz finished!</h2><p>Your score: ${score}/${words.length}</p>`;
+  document.getElementById("quiz-screen").style.display = "none";
+  document.getElementById("end-screen").style.display = "block";
+  document.getElementById("score").innerText = `Your score: ${score}/${quizWords.length}`;
+}
+
+function restartQuiz() {
+  document.getElementById("start-screen").style.display = "block";
+  document.getElementById("quiz-screen").style.display = "none";
+  document.getElementById("end-screen").style.display = "none";
 }
 
 document.addEventListener("DOMContentLoaded", loadWords);

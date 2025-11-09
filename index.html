@@ -6,12 +6,31 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>🇹🇷 Turkish Quiz</h1>
-  <p>Translate to Turkish:</p>
-  <h2 id="english">Loading...</h2>
-  <input id="answer" type="text" placeholder="Type in Turkish" onkeydown="if(event.key==='Enter') checkAnswer()" />
-  <p id="result"></p>
-  <p>⏳ <span id="timer">30</span>s</p>
+  <!-- Start screen -->
+  <div id="start-screen">
+    <h1>🇹🇷 Turkish Quiz</h1>
+    <p>How many words do you want to practice?</p>
+    <input id="wordCount" type="number" min="1" max="100" value="20" />
+    <br /><br />
+    <button id="startButton" disabled>Loading words...</button>
+  </div>
+
+  <!-- Quiz screen -->
+  <div id="quiz-screen" style="display:none;">
+    <p>Translate to Turkish:</p>
+    <h2 id="english">Loading...</h2>
+    <input id="answer" type="text" placeholder="Type in Turkish" onkeydown="if(event.key==='Enter') checkAnswer()" />
+    <p id="result"></p>
+    <p>⏳ <span id="timer">30</span>s</p>
+  </div>
+
+  <!-- End screen -->
+  <div id="end-screen" style="display:none;">
+    <h2>Quiz finished!</h2>
+    <p id="score"></p>
+    <button onclick="restartQuiz()">Start another quiz</button>
+  </div>
+
   <script src="script.js"></script>
 </body>
 </html>
