@@ -21,14 +21,70 @@ async function loadWords() {
   }
 }
 
+// helper: Fisher–Yates shuffle
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+}
+
+// helper: guess whether an entry is a verb by checking common keys/flags
+function isVerbEntry(w) {
+  if (!w) return false;
+  if (w.isVerb === true) return true;
+  const keys = ['pos', 'type', 'tag', 'partOfSpeech', 'posTag'];
+  for (const k of keys) {
+    if (w[k]) {
+      const val = Array.isArray(w[k]) ? w[k].join(' ').toLowerCase() : String(w[k]).toLowerCase();
+      if (val.includes('verb') || val.startsWith('v ' ) || /^v\b/.test(val)) return true;
+    }
+  }
+  return false;
+}
+
 function startQuiz() {
   if (words.length === 0) {
     alert("Words not loaded yet!");
     return;
   }
 
-  const total = parseInt(document.getElementById("wordCount").value) || 20;
-  quizWords = [...words].sort(() => 0.5 - Math.random()).slice(0, total);
+  let total = parseInt(document.getElementById("wordCount").value) || 20;
+  // compute max verbs allowed (20%)
+  let maxVerbs = Math.floor(total * 0.2);
+
+  // split verbs and non-verbs using heuristic
+  const verbs = words.filter(isVerbEntry);
+  const others = words.filter(w => !isVerbEntry(w));
+
+  // ensure we don't request more words than available
+  const availableTotal = verbs.length + others.length;
+  total = Math.min(total, availableTotal);
+
+  // cap verb count to available verbs and to the 20% limit
+  const verbCount = Math.min(maxVerbs, verbs.length);
+
+  // shuffle pools and pick
+  shuffleArray(verbs);
+  shuffleArray(others);
+
+  const selected = [];
+  selected.push(...verbs.slice(0, verbCount));
+  const need = total - selected.length;
+  selected.push(...others.slice(0, need));
+
+  // if still short (shouldn't happen because total was capped), fill from remaining words
+  if (selected.length < total) {
+    const leftover = words.filter(w => !selected.includes(w));
+    shuffleArray(leftover);
+    for (const w of leftover) {
+      if (selected.length >= total) break;
+      selected.push(w);
+    }
+  }
+
+  // final random order
+  quizWords = [...selected].sort(() => 0.5 - Math.random());
   current = 0;
   score = 0;
 
