@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Turkish Quiz</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>🇹🇷 Turkish Quiz</h1>
+  <p>Translate to Turkish:</p>
+  <h2 id="english">Loading...</h2>
+  <input id="answer" type="text" placeholder="Type in Turkish" onkeydown="if(event.key==='Enter') checkAnswer()" />
+  <p id="result"></p>
+  <p>⏳ <span id="timer">30</span>s</p>
+  <script src="script.js"></script>
+</body>
+</html>
